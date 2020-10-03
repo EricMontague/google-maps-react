@@ -1,3 +1,10 @@
+# Google Maps React Personal Fork
+This is my personal for of the google-maps-react package, which includes some optimizations that prevent unecessary rerendering of the map, due to incorrect comparisons in the componentDidUpdate methods of the Map and Marker components. Everything below this point is from the original repo 
+
+
+<hr>
+
+
 <p align="center">
   <img src="resources/readme/fullstackreact-google-maps-tutorial.png" alt="Fullstack React Google Maps Tutorial" />
 </p>
