@@ -1,47 +1,49 @@
-import React, {Fragment} from 'react'
-import PropTypes from 'prop-types'
+import React, { Fragment } from "react";
+import PropTypes from "prop-types";
 
-import { camelize } from '../lib/String'
+import { camelize } from "../lib/String";
 
 const evtNames = [
-  'click',
-  'dblclick',
-  'dragend',
-  'mousedown',
-  'mouseout',
-  'mouseover',
-  'mouseup',
-  'recenter',
+  "click",
+  "dblclick",
+  "dragend",
+  "mousedown",
+  "mouseout",
+  "mouseover",
+  "mouseup",
+  "recenter"
 ];
 
 const wrappedPromise = function() {
-    var wrappedPromise = {},
-        promise = new Promise(function (resolve, reject) {
-            wrappedPromise.resolve = resolve;
-            wrappedPromise.reject = reject;
-        });
-    wrappedPromise.then = promise.then.bind(promise);
-    wrappedPromise.catch = promise.catch.bind(promise);
-    wrappedPromise.promise = promise;
+  var wrappedPromise = {},
+    promise = new Promise(function(resolve, reject) {
+      wrappedPromise.resolve = resolve;
+      wrappedPromise.reject = reject;
+    });
+  wrappedPromise.then = promise.then.bind(promise);
+  wrappedPromise.catch = promise.catch.bind(promise);
+  wrappedPromise.promise = promise;
 
-    return wrappedPromise;
-}
+  return wrappedPromise;
+};
 
-export class Marker extends React.Component {
-
+export class CustomMarker extends React.Component {
   componentDidMount() {
     this.markerPromise = wrappedPromise();
     this.renderMarker();
   }
 
   componentDidUpdate(prevProps) {
-    if ((this.props.map !== prevProps.map) ||
-      (this.props.position !== prevProps.position) ||
-      (this.props.icon !== prevProps.icon)) {
-        if (this.marker) {
-            this.marker.setMap(null);
-        }
-        this.renderMarker();
+    if (
+      this.props.map !== prevProps.map ||
+      this.props.position.lat !== prevProps.position.lat ||
+      this.props.position.lng !== prevProps.position.lng ||
+      this.props.icon !== prevProps.icon
+    ) {
+      if (this.marker) {
+        this.marker.setMap(null);
+      }
+      this.renderMarker();
     }
   }
 
@@ -63,8 +65,8 @@ export class Marker extends React.Component {
       title,
       ...props
     } = this.props;
-    if (!google) {
-      return null
+    if (!google || !map) {
+      return null;
     }
 
     let pos = position || mapCenter;
@@ -83,6 +85,12 @@ export class Marker extends React.Component {
     };
     this.marker = new google.maps.Marker(pref);
 
+    // Create bounds and extend to include the marker's position
+    props.bounds.extend(this.marker.position);
+
+    // fit the map to the newly inclusive bounds
+    map.fitBounds(props.bounds);
+
     evtNames.forEach(e => {
       this.marker.addListener(e, this.handleEvent(e));
     });
@@ -95,12 +103,12 @@ export class Marker extends React.Component {
   }
 
   handleEvent(evt) {
-    return (e) => {
-      const evtName = `on${camelize(evt)}`
+    return e => {
+      const evtName = `on${camelize(evt)}`;
       if (this.props[evtName]) {
         this.props[evtName](this.props, this.marker, e);
       }
-    }
+    };
   }
 
   render() {
@@ -108,15 +116,15 @@ export class Marker extends React.Component {
   }
 }
 
-Marker.propTypes = {
+CustomMarker.propTypes = {
   position: PropTypes.object,
   map: PropTypes.object
-}
+};
 
-evtNames.forEach(e => Marker.propTypes[e] = PropTypes.func)
+evtNames.forEach(e => (CustomMarker.propTypes[e] = PropTypes.func));
 
-Marker.defaultProps = {
-  name: 'Marker'
-}
+CustomMarker.defaultProps = {
+  name: "Marker"
+};
 
-export default Marker
+export default CustomMarker;
