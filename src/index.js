@@ -1,17 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
-import {camelize} from './lib/String';
-import {makeCancelable} from './lib/cancelablePromise';
+import React from "react";
+import PropTypes from "prop-types";
+import ReactDOM from "react-dom";
+import { camelize } from "./lib/String";
+import { makeCancelable } from "./lib/cancelablePromise";
 
 const mapStyles = {
   container: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%'
+    position: "absolute",
+    width: "100%",
+    height: "100%"
   },
   map: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
@@ -20,43 +20,43 @@ const mapStyles = {
 };
 
 const evtNames = [
-  'ready',
-  'click',
-  'dragend',
-  'recenter',
-  'bounds_changed',
-  'center_changed',
-  'dblclick',
-  'dragstart',
-  'heading_change',
-  'idle',
-  'maptypeid_changed',
-  'mousemove',
-  'mouseout',
-  'mouseover',
-  'projection_changed',
-  'resize',
-  'rightclick',
-  'tilesloaded',
-  'tilt_changed',
-  'zoom_changed'
+  "ready",
+  "click",
+  "dragend",
+  "recenter",
+  "bounds_changed",
+  "center_changed",
+  "dblclick",
+  "dragstart",
+  "heading_change",
+  "idle",
+  "maptypeid_changed",
+  "mousemove",
+  "mouseout",
+  "mouseover",
+  "projection_changed",
+  "resize",
+  "rightclick",
+  "tilesloaded",
+  "tilt_changed",
+  "zoom_changed"
 ];
 
-export {wrapper as GoogleApiWrapper} from './GoogleApiComponent';
-export {Marker} from './components/Marker';
-export {InfoWindow} from './components/InfoWindow';
-export {HeatMap} from './components/HeatMap';
-export {Polygon} from './components/Polygon';
-export {Polyline} from './components/Polyline';
-export {Circle} from './components/Circle';
-export {Rectangle} from './components/Rectangle';
+export { wrapper as GoogleApiWrapper } from "./GoogleApiComponent";
+export { Marker } from "./components/Marker";
+export { InfoWindow } from "./components/InfoWindow";
+export { HeatMap } from "./components/HeatMap";
+export { Polygon } from "./components/Polygon";
+export { Polyline } from "./components/Polyline";
+export { Circle } from "./components/Circle";
+export { Rectangle } from "./components/Rectangle";
 
 export class Map extends React.Component {
   constructor(props) {
     super(props);
 
-    if (!props.hasOwnProperty('google')) {
-      throw new Error('You must include a `google` prop');
+    if (!props.hasOwnProperty("google")) {
+      throw new Error("You must include a `google` prop");
     }
 
     this.listeners = {};
@@ -67,31 +67,10 @@ export class Map extends React.Component {
       }
     };
 
-    this.mapRef=React.createRef();
+    this.mapRef = React.createRef();
   }
 
   componentDidMount() {
-    if (this.props.centerAroundCurrentLocation) {
-      if (navigator && navigator.geolocation) {
-        this.geoPromise = makeCancelable(
-          new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject);
-          })
-        );
-
-        this.geoPromise.promise
-          .then(pos => {
-            const coords = pos.coords;
-            this.setState({
-              currentLocation: {
-                lat: coords.latitude,
-                lng: coords.longitude
-              }
-            });
-          })
-          .catch(e => e);
-      }
-    }
     this.loadMap();
   }
 
@@ -105,21 +84,27 @@ export class Map extends React.Component {
     if (this.props.zoom !== prevProps.zoom) {
       this.map.setZoom(this.props.zoom);
     }
-    if (this.props.center !== prevProps.center) {
+    if (
+      this.props.center.lat !== prevProps.center.lat ||
+      this.props.center.lng !== prevProps.center.lng
+    ) {
       this.setState({
         currentLocation: this.props.center
       });
     }
-    if (prevState.currentLocation !== this.state.currentLocation) {
+    if (
+      prevState.currentLocation.lat !== this.state.currentLocation.lat ||
+      prevState.currentLocation.lng !== this.state.currentLocation.lng
+    ) {
       this.recenterMap();
     }
-    if (this.props.bounds && this.props.bounds !== prevProps.bounds) {
+    if (this.props.bounds && !this.props.bounds.equals(prevProps.bounds)) {
       this.map.fitBounds(this.props.bounds);
     }
   }
 
   componentWillUnmount() {
-    const {google} = this.props;
+    const { google } = this.props;
     if (this.geoPromise) {
       this.geoPromise.cancel();
     }
@@ -130,7 +115,7 @@ export class Map extends React.Component {
 
   loadMap() {
     if (this.props && this.props.google) {
-      const {google} = this.props;
+      const { google } = this.props;
       const maps = google.maps;
 
       const mapRef = this.mapRef.current;
@@ -184,7 +169,7 @@ export class Map extends React.Component {
       evtNames.forEach(e => {
         this.listeners[e] = this.map.addListener(e, this.handleEvent(e));
       });
-      maps.event.trigger(this.map, 'ready');
+      maps.event.trigger(this.map, "ready");
       this.forceUpdate();
     }
   }
@@ -209,7 +194,7 @@ export class Map extends React.Component {
   recenterMap() {
     const map = this.map;
 
-    const {google} = this.props;
+    const { google } = this.props;
 
     if (!google) return;
     const maps = google.maps;
@@ -221,19 +206,19 @@ export class Map extends React.Component {
       }
       // map.panTo(center)
       map.setCenter(center);
-      maps.event.trigger(map, 'recenter');
+      maps.event.trigger(map, "recenter");
     }
   }
 
   restyleMap() {
     if (this.map) {
-      const {google} = this.props;
-      google.maps.event.trigger(this.map, 'resize');
+      const { google } = this.props;
+      google.maps.event.trigger(this.map, "resize");
     }
   }
 
   renderChildren() {
-    const {children} = this.props;
+    const { children } = this.props;
 
     if (!children) return;
 
@@ -249,7 +234,7 @@ export class Map extends React.Component {
 
   render() {
     const style = Object.assign({}, mapStyles.map, this.props.style, {
-      display: this.props.visible ? 'inherit' : 'none'
+      display: this.props.visible ? "inherit" : "none"
     });
 
     const containerStyles = Object.assign(
