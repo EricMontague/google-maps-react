@@ -116,15 +116,15 @@ export class Marker extends React.Component {
   }
 }
 
-CustomMarker.propTypes = {
+Marker.propTypes = {
   position: PropTypes.object,
   map: PropTypes.object
 };
 
-evtNames.forEach(e => (CustomMarker.propTypes[e] = PropTypes.func));
+evtNames.forEach(e => (Marker.propTypes[e] = PropTypes.func));
 
-CustomMarker.defaultProps = {
+Marker.defaultProps = {
   name: "Marker"
 };
 
-export default CustomMarker;
+export default Marker;
