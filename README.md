@@ -1,7 +1,7 @@
 # Google Maps React Personal Fork
 This is my personal for of the google-maps-react package, which includes some optimizations that prevent unecessary rerendering of the map, due to incorrect comparisons in the componentDidUpdate methods of the Map and Marker components. Everything below this point is from the original repo.
 
-In order to install this fork as a dependency with npm, type ```npm install https://github.com/EricMontague/google-maps-react``` in your CLI
+In order to install this fork as a dependency with npm, type ```npm install https://github.com/EricMontague/google-maps-react``` into your CLI
 
 
 <hr>
