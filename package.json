@@ -19,7 +19,6 @@
   "types": "index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "prepublish": "./scripts/prepublish.sh",
     "preversion": ". ./scripts/prepublish.sh",
     "prepare": "npm run build",
     "dev": "NODE_ENV=development ./node_modules/hjs-webpack/bin/hjs-dev-server.js",
