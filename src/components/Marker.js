@@ -27,7 +27,7 @@ const wrappedPromise = function() {
   return wrappedPromise;
 };
 
-export class CustomMarker extends React.Component {
+export class Marker extends React.Component {
   componentDidMount() {
     this.markerPromise = wrappedPromise();
     this.renderMarker();
